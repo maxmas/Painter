@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>Painter</title>
+		<meta name="description" content="绘图  html5 canvas" />
+		<meta name="author" content="yan" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="images/Painter.gif" />
+		
+		<!-- bootstrap css -->
+		<link rel="stylesheet" href="plugins/bootstrap/css/bootstrap.min.css" />				
+		
+		<!-- 主页css  -->
+		<link rel="stylesheet" href="css/layout.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		
+		<!-- jquery ui css -->
+		<link rel="stylesheet" href="plugins/jqueryui+/themes/base/minified/jquery-ui.min.css" />
+		<link rel="stylesheet" href="plugins/jqueryui+/themes/base/minified/jquery.ui.core.min.css" />
+		<link rel="stylesheet" href="plugins/jqueryui+/themes/base/minified/jquery.ui.dialog.min.css" />
+		<link rel="stylesheet" href="plugins/jqueryui+/themes/base/minified/jquery.ui.theme.min.css" />
+		
+		<!-- color css -->
+		<link rel='stylesheet' href='plugins/spectrum/spectrum.css' />
+	</head>
+
+	<body>
+		<div id="loading" class="loading">			
+			<div class="progress progress-striped active">
+			  <div class="bar" style="width: 100%;"></div>
+			</div>
+			<p>
+				Loading core module please wait a while...
+			</p>
+		</div><!-- end .loading -->
+		<div class="container-fluid">
+			<nav class="navbar">
+				 <div class="navbar-inner">
+					<h1><a class="brand" href="https://github.com/yanhaijing/Painter">Painter</a></h1>
+					<ul id="menu" class="nav">
+						<li class="dropdown file">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">文件 <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="#"><b class="icon-plus-sign"></b> 新建<i>Ctrl+N</i></a>
+								</li>
+								<li>
+									<a href="#"><b class="icon-folder-open"></b> 打开<i>Ctrl+O</i></a>
+								</li>
+								<li>
+									<a id="nav-file-save" href="#"><b class="icon-ok"></b> 保存 <i>Ctrl+S</i></a>
+								</li>
+								<li>
+									<a href="#myModal" data-toggle="modal" id="nav-file-export" href="#"><b class="icon-share-alt"></b> 导出<i>Ctrl+E</i></a>
+								</li>
+							</ul>
+						</li><!-- end .file -->
+						<li class="dropdown edit">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">编辑 <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a id="nav-edit-undo" href="#"><b class="icon-step-backward"></b> 撤销<i>Ctrl+Z</i></a>
+								</li>
+								<li>
+									<a id="nav-edit-clear" href="#"><b class="icon-trash"></b> 清空<i>Ctrl+D</i></a>
+								</li>
+								<li>
+									<a id="nav-edit-convert" href="#"><b class="icon-random"></b> 倒置<i>Ctrl+R</i></a>
+								</li>
+								<li>
+									<a id="nav-edit-flipx" href="#"><b class="icon-resize-horizontal"></b> 水平翻转<i>Ctrl+H</i></a>
+								</li>
+								<li>
+									<a id="nav-edit-flipy" href="#"><b class="icon-resize-vertical"></b> 垂直翻转<i>Ctrl+V</i></a>
+								</li>
+							</ul>
+						</li><!-- end .edit -->																		
+						<li class="dropdown help">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">帮助 <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a target="_blank" href="https://github.com/yanhaijing/Painter/issues"><b class="icon-info-sign"></b> 报告问题</a>
+								</li>
+								<li>
+									<a target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=Djg_Ojg9Njc7Pk5-fyBtYWM" style="text-decoration:none;"><b class="icon-envelope"></b> 联系作者</a>
+								</li>
+								<li>
+									<a target="_blank" href="https://github.com/yanhaijing/Painter#readme"><b class="icon-question-sign"></b> 关于Painter</a>
+								</li>
+							</ul>
+						</li><!-- end .help -->
+						<li class="dropdown social">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">社交 <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li id="nav-share-qq">
+									<a class="qcShareQQDiv" href="#" target="_blank">分享到QQ</a>
+								</li>
+								<li id="nav-share-qzone">
+									<a version="1.0" class="qzOpenerDiv" href="#" target="_blank">QQ空间</a>
+								</li>
+								<li id="nav-share-qweibo">
+									<div id="qqwb_share__" data-appkey="801358347" data-icon="1" data-counter="1" data-counter_pos="right" data-content="Painter" data-richcontent="Html5|Canvas|Javascript" data-pic="http://yanhaijing.github.io/Painter/images/Painter.gif"></div>
+								</li>																
+							</ul>
+						</li><!-- end .share -->
+					</ul><!-- end .nav -->
+				</div><!-- end .navbar-inner -->
+			</nav>			
+			<div class="row-fluid main-wrap">
+				<div class="span12 canvas-wrap">
+					<canvas width="1000" height="400" id="canvas-background" class="canvas-paint canvas-background"></canvas>
+					<canvas width="1000" height="400" class="canvas-paint canvas-layer"></canvas>
+					<canvas width="1000" height="400" class="canvas-paint canvas-buffer"></canvas>
+					<canvas width="1000" height="400" id="canvas-mouse" class="canvas-paint canvas-mouse"></canvas>
+				</div><!-- end .canvas-wrap -->
+				<!-- <div class="span3 info">
+					
+				</div><!-- end .info -->
+			</div><!-- end .main-wrap -->
+			
+			<div id="tool-wrap" class="tool-wrap">
+				<div class="tool">
+					<button class="shape active" title="形状工具" data-current-tool="Line" data-tool-panel="shape"></button>					
+					<button class="stroke" title="轮廓工具" data-current-tool="Pen" data-tool-panel="stroke"></button>
+					<button class="eraser" title="橡皮擦工具" data-current-tool="Eraser" data-tool-panel="eraser"></button>
+					<button class="flood-fill" title="填充工具" data-current-tool="FloodFill" data-tool-panel="flood-fill"></button>
+					<button class="eye-dropper" title="吸管工具" data-current-tool="EyeDropper" data-tool-panel="eye-dropper"></button>
+					<button class="text" title="文字工具" data-tool-panel="text" data-current-tool="Text"></button>
+					<input class="color" type="text" title="颜色" value="#000000"/>					
+				</div><!-- end .tool -->
+				<div class="tool-panel">
+					<div class="shape wrap">
+						<button class="line" title="直线" data-tool="shape" data-tool-class="Line"></button>
+						<button class="curve-closed" title="闭合曲线" data-tool="shape" data-tool-class="CurveClosed"></button>
+						<button class="rect" title="矩形" data-tool="shape" data-tool-class="Rect"></button>
+						<button class="rect-round" title="圆角矩形" data-tool="shape" data-tool-class="RectRound"></button>
+						<button class="circle" title="圆" data-tool="shape" data-tool-class="Circle"></button>	
+						<button class="ellipes" title="椭圆" data-tool="shape" data-tool-class="Ellipes"></button>	
+						<div id="tool-shape-attribute-panel" class="tool-attribute-panel" title="形状属性面板">
+							<form>
+								<fieldset>
+									<legend>property</legend>
+									<label>size：<input class="width" type="range" min="1" max="100" value="1" data-attr="lineWidth" /><span>1</span></label>
+									<label>opacity：<input class="opacity" type="range" max="100" value="100" data-attr="opacity" /><span>100</span></label>	
+								</fieldset>
+								<fieldset>
+									<legend>shadow</legend>
+									<label>shadowOffsetX：<input class="shadow-offsetx" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetX" /><span>0</span></label>
+									<label>shadowOffsetY：<input class="shadow-offsety" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetY" /><span>0</span></label>
+									<label>shadowBlur：<input class="shadow-blur" type="range" min="0" max="10" value="0" data-attr="shadowBlur" /><span>0</span></label>
+									<label>shadowColor：<input class="shadow-color" type="color" data-attr="shadowColor" /></label>
+								</fieldset>
+								<fieldset class="radios">										
+									<legend>lineJoin</legend>
+									<label>
+										<input data-attr="lineJoin" name="line-join" type="radio" value="miter" checked="true" /><span>miter</span>
+									</label>
+									<label>
+										<input data-attr="lineJoin" name="line-join" type="radio" value="bevel" /><span>bevel</span>
+									</label>
+									<label>
+										<input data-attr="lineJoin" name="line-join" type="radio" value="round" /><span>round</span>
+									</label>
+								</fieldset>
+								<fieldset class="radios">										
+									<legend>lineCap</legend>															
+									<label>
+										<input name="line-cap" type="radio" data-attr="lineCap" value="butt" checked="true" /><span>butt</span>
+									</label>
+									<label>
+										<input name="line-cap" type="radio" data-attr="lineCap" value="round" /><span>round</span>
+									</label>
+									<label>
+										<input name="line-cap" type="radio" data-attr="lineCap" value="square" /><span>square</span>
+									</label>
+								</fieldset>
+							</form>													
+						</div>					
+					</div><!-- end .shape -->
+					
+					<div class="stroke wrap">
+						<button class="pen" title="铅笔" data-tool="stroke" data-tool-class="Pen"> </button>
+						<button class="curve-closed-stroke" title="闭合曲线" data-tool="stroke" data-tool-class="CurveClosedStroke"></button>
+						<button class="rect-stroke" title="矩形" data-tool="stroke" data-tool-class="RectStroke"> </button>
+						<button class="rect-round-stroke" title="圆角矩形" data-tool="stroke" data-tool-class="RectRoundStroke"></button>
+						<button class="circle-stroke" title="圆形" data-tool="stroke" data-tool-class="CircleStroke"></button>
+						<button class="ellipes-stroke" title="椭圆" data-tool="stroke" data-tool-class="EllipesStroke"></button>
+						<div id="tool-stroke-attribute-panel" class="tool-attribute-panel" title="轮廓属性面板">
+							<form>
+								<fieldset>
+									<legend>property</legend>
+									<label>size：<input class="width" type="range" min="1" max="100" value="1" data-attr="lineWidth" /><span>1</span></label>
+									<label>opacity：<input class="opacity" type="range" max="100" value="100" data-attr="opacity" /><span>100</span></label>	
+								</fieldset>
+								<fieldset >
+									<legend>shadow</legend>
+									<label>shadowOffsetX：<input class="shadow-offsetx" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetX" /><span>0</span></label>
+									<label>shadowOffsetY：<input class="shadow-offsety" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetY" /><span>0</span></label>
+									<label>shadowBlur：<input class="shadow-blur" type="range" min="0" max="10" value="0" data-attr="shadowBlur" /><span>0</span></label>
+									<label>shadowColor：<input class="shadow-color" type="color" data-attr="shadowColor" /></label>
+								</fieldset>
+								<fieldset class="radios">										
+									<legend>lineJoin</legend>
+									<label>
+										<input data-attr="lineJoin" name="line-join" type="radio" value="miter" checked="true" /><span>miter</span>
+									</label>
+									<label>
+										<input data-attr="lineJoin" name="line-join" type="radio" value="bevel" /><span>bevel</span>
+									</label>
+									<label>
+										<input data-attr="lineJoin" name="line-join" type="radio" value="round" /><span>round</span>
+									</label>
+								</fieldset>
+								<fieldset class="radios">										
+									<legend>lineCap</legend>															
+									<label>
+										<input name="line-cap" type="radio" data-attr="lineCap" value="butt" checked="true" /><span>butt</span>
+									</label>
+									<label>
+										<input name="line-cap" type="radio" data-attr="lineCap" value="round" /><span>round</span>
+									</label>
+									<label>
+										<input name="line-cap" type="radio" data-attr="lineCap" value="square" /><span>square</span>
+									</label>
+								</fieldset>
+							</form>						
+						</div>					
+					</div><!-- end .brush -->
+					
+					<div class="eraser wrap">	
+						<div id="tool-eraser-attribute-panel" class="tool-attribute-panel" title="橡皮属性面板">
+							<form>
+								<fieldset>
+									<legend>property</legend>
+									<label>size：<input type="range" min="1" max="100" data-attr="lineWidth" value="1" /><span>1</span></label>
+									<label>opacity：<input class="opacity" type="range" max="100" value="100" data-attr="opacity" /><span>100</span></label>	
+								</fieldset>							
+								<fieldset >
+									<legend>shadow</legend>
+									<label>shadowOffsetX：<input class="shadow-offsetx" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetX" /><span>0</span></label>
+									<label>shadowOffsetY：<input class="shadow-offsety" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetY" /><span>0</span></label>
+									<label>shadowBlur：<input class="shadow-blur" type="range" min="0" max="10" value="0" data-attr="shadowBlur" /><span>0</span></label>
+									<label>shadowColor：<input class="shadow-color" type="color" data-attr="shadowColor" value="#ffffff" /></label>
+								</fieldset>
+								<fieldset class="radios">										
+										<legend>lineJoin</legend>
+										<label>
+											<input data-attr="lineJoin" name="line-join" type="radio" value="miter" checked="true" /><span>miter</span>
+										</label>
+										<label>
+											<input data-attr="lineJoin" name="line-join" type="radio" value="bevel" /><span>bevel</span>
+										</label>
+										<label>
+											<input data-attr="lineJoin" name="line-join" type="radio" value="round" /><span>round</span>
+										</label>
+									</fieldset>
+									<fieldset class="radios">										
+										<legend>lineCap</legend>															
+										<label>
+											<input name="line-cap" type="radio" data-attr="lineCap" value="butt" checked="true" /><span>butt</span>
+										</label>
+										<label>
+											<input name="line-cap" type="radio" data-attr="lineCap" value="round" /><span>round</span>
+										</label>
+										<label>
+											<input name="line-cap" type="radio" data-attr="lineCap" value="square" /><span>square</span>
+										</label>
+									</fieldset>
+								</form>						
+						</div>					
+					</div><!-- end .brush -->
+					
+					<div class="text wrap">
+						<button class="text" title="文本" data-tool="text" data-tool-class="Text"> </button>
+						<button class="text-stroke" title="文本轮廓" data-tool="text" data-tool-class="TextStroke"> </button>
+						在属性面板输入要输入的文字，在画布上想要输入的位置点击	
+						<div id="tool-text-attribute-panel" class="tool-attribute-panel" title="文字属性面板">
+							<form>
+								<label>text: <input class="text" type="text" placeholder="输入要输入的文字" data-attr="text" /></label>
+								<fieldset>
+									<legend>property</legend>
+									<label>font:
+										<select class="font" data-attr="family">
+											<option selected="true" class="serif" value="serif">serif</option>
+											<option class="sans-serif" value="sans-serif">sans-serif</option>								
+										</select>	
+									</label>
+									<label class="checkbox"><b>bold:</b>
+									  <input class="bold" type="checkbox" value="bold" data-attr="bold">
+									</label>
+									<label class="checkbox"><i>italic:</i>
+									  <input class="italic" type="checkbox" value="italic" data-attr="italic">
+									</label>							
+									<label>size：<input class="size" type="range" min="8" max="100" data-attr="size" value="10" /><span>10</span><span>px</span></label>	
+									<label>border：<input class="border" type="range" min="1" max="100" data-attr="border" value="1" /><span>1</span><span></span></label>								
+									<label>opacity：<input class="opacity" type="range" max="100" data-attr="opacity" value="100" /><span>100</span></label>	
+								</fieldset>
+								<fieldset>
+									<legend>shadow</legend>
+									<label>shadowOffsetX：<input class="shadow-offsetx" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetX" /><span>0</span></label>
+									<label>shadowOffsetY：<input class="shadow-offsety" type="range" min="-10" max="10" value="0" data-attr="shadowOffsetY" /><span>0</span></label>
+									<label>shadowBlur：<input class="shadow-blur" type="range" min="0" max="10" value="0" data-attr="shadowBlur" /><span>0</span></label>
+									<label>shadowColor：<input class="shadow-color" type="color" data-attr="shadowColor" /></label>
+								</fieldset>
+							</form>
+						</div>					
+					</div><!-- end .brush -->
+					
+					<div class="flood-fill wrap">	
+						<div id="tool-flood-fill-attribute-panel" class="tool-attribute-panel" title="油漆桶属性面板">
+							<form>
+								<fieldset>
+									<legend>property</legend>
+									<label>opacity：<input type="range" max="100" data-attr="opacity" value="100" /><span>100</span></label>	
+								</fieldset>
+							</form>
+						</div>					
+					</div><!-- end .brush -->
+				</div><!-- end .tool-panel -->
+			</div><!-- end .tool-wrap -->
+			
+			<footer>
+				<p>
+					Copyright &copy; <a href="https://github.com/yanhaijing/">yanhaijing</a>. All Rights Reserved
+					
+				</p>
+			</footer>
+			
+			<!-- 保存图片预览 -->
+			<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-header">
+			    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			    <h3 id="myModalLabel">保存图片-右键-图片另存为</h3>
+			  </div>
+			  <div class="modal-body">
+			    <p><img id="save-image" src="images/Painter.gif" style="outline: 1px solid #ff0"></p>
+			  </div>
+			  <div class="modal-footer">
+			    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			  </div>
+			</div>
+		</div><!-- end .container -->
+		<!-- import jquery js -->
+		<script src="js/jquery-1.9.1.min.js"></script>
+		
+		<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+		
+		<!-- import spectrum -->
+		<script src='plugins/spectrum/spectrum.js'></script>			
+		
+		<!-- import jquery ui js -->				
+		<script src="plugins/jqueryui+/ui/minified/jquery-ui.min.js"></script>
+		
+		<!-- import my js -->
+				
+		<!-- 添加存储类js -->
+		<script src="js/model/storageModel.js"></script>
+		<!-- 添加鼠标模型类 -->
+		<script src="js/model/mouseModel.js"></script>
+		
+		<!-- 添加点列表对象 -->
+		<script src="js/model/pointListModel.js"></script>
+		<!-- import shape js -->
+		<script src="js/model/shapeModel.js"></script>
+		
+		<!-- import nav js -->
+		<script src="js/controler/nav.js"></script>
+		
+		<!-- 导入主页js -->
+		<script src="js/controler/index.js"></script>
+		
+		<!-- import tool js -->
+		<script src="js/model/toolModel.js"></script>
+		<script src="js/model/toolContainerModel.js"></script>
+		<script src="js/controler/tool.js"></script>
+		
+		<!-- import canvas -->
+		<script src="js/model/canvasModel.js"></script>
+		<script src="js/model/canvasContainerModel.js"></script>
+		<script src="js/controler/canvas.js"></script>
+		
+		<!-- 提示消息js -->
+		<script src="plugins/torangetek/torangetek.messager.js"></script>
+		
+		<!-- 导入load js -->
+		<script src="js/controler/loading.js"></script>
+				
+		<!-- 分享组件js -->
+		<script src="js/controler/share.js"></script>
+		<script src="http://qzonestyle.gtimg.cn/qzone/app/qzlike/qzopensl.js#jsdate=20111201" charset="utf-8"></script>
+		<script src="http://mat1.gtimg.com/app/openjs/openjs.js#autoboot=no&debug=no"></script>
+		<script src="http://connect.qq.com/widget/loader/loader.js" widget="shareqq" charset="utf-8"></script>			
+	</body>
+</html>
